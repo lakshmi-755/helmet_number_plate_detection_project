@@ -87,3 +87,13 @@ The repository includes:
 ```bash
 git clone https://github.com/yourusername/helmet-numberplate-recognition.git
 cd helmet-numberplate-recognition
+### 2️⃣ Install dependencies
+```bash
+pip install -r requirements.txt
+### 3️⃣ Run the Streamlit web app
+```bash
+streamlit run app.py
+
+
+
+
