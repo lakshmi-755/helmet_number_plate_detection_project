@@ -1,7 +1,7 @@
 streamlit
-opencv-python-headless==4.5.1.48 
+opencv-python==4.11.0
 numpy
-Pillow
+pillow
 easyocr
 ultralytics
 imutils
