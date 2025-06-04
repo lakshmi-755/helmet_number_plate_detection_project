@@ -8,10 +8,13 @@ from PIL import Image
 import imutils  # Import imutils
 
 # Load YOLOv8 Model
-model = YOLO(r"C:\Users\HP\runs\detect\train13\weights\best.pt")
+#model = YOLO(r"C:\Users\HP\runs\detect\train13\weights\best.pt")
+model = YOLO("best.pt")
 
 # Initialize EasyOCR Reader
-reader = easyocr.Reader(['en'], gpu=True, model_storage_directory=r"C:\Users\HP\Downloads\project_dataset")
+#reader = easyocr.Reader(['en'], gpu=True, model_storage_directory=r"C:\Users\HP\Downloads\project_dataset")
+reader = easyocr.Reader(['en'], gpu=False, model_storage_directory=".")
+
 
 
 st.title("🚀 Helmet Detection & Number Plate Recognition")
