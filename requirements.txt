@@ -1,7 +1,7 @@
 streamlit
-opencv-python==4.11.0.86
+opencv-contrib-python==4.9.0.80
+ultralytics
 numpy
 pillow
 easyocr
-ultralytics
 imutils
