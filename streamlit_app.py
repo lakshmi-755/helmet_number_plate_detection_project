@@ -1,7 +1,6 @@
 
 import subprocess
 import sys
-import os
 
 # Ensure OpenCV is available
 try:
@@ -10,14 +9,18 @@ except ModuleNotFoundError:
     subprocess.check_call([sys.executable, "-m", "pip", "install", "opencv-python-headless"])
     import cv2
 
-# Fix for PyTorch >= 2.6 model unpickling
 import torch
 from torch.serialization import add_safe_globals
 from ultralytics.nn.tasks import DetectionModel
 from torch.nn.modules.container import Sequential
-add_safe_globals([DetectionModel, Sequential])
+import ultralytics.nn.modules.conv  # Import Conv
 
-# All necessary imports
+add_safe_globals([
+    DetectionModel,
+    Sequential,
+    ultralytics.nn.modules.conv.Conv  # Add Conv for safe unpickling
+])
+
 import streamlit as st
 import numpy as np
 import easyocr
@@ -25,14 +28,11 @@ from ultralytics import YOLO
 from PIL import Image
 import imutils
 
-
-# Load YOLOv8 Model
+# Load YOLO model
 model = YOLO("best.pt")
+
 # Initialize EasyOCR Reader
-#reader = easyocr.Reader(['en'], gpu=True, model_storage_directory=r"C:\Users\HP\Downloads\project_dataset")
 reader = easyocr.Reader(['en'], gpu=False, model_storage_directory=".")
-
-
 
 st.title("🚀 Helmet Detection & Number Plate Recognition")
 st.write("This the web page in which it takes image or video of motorcyclists as input")
