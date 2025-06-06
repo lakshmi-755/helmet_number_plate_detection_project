@@ -7,18 +7,21 @@ try:
 except ModuleNotFoundError:
     subprocess.check_call([sys.executable, "-m", "pip", "install", "opencv-python-headless"])
     import cv2
+
+import torch
+from torch.serialization import add_safe_globals
+from ultralytics.nn.tasks import DetectionModel
+add_safe_globals([DetectionModel])  # ✅ Required for loading best.pt
+
 import streamlit as st
-import cv2
 import numpy as np
 import easyocr
 from ultralytics import YOLO
 from PIL import Image
-import imutils  # Import imutils
+import imutils
 
 # Load YOLOv8 Model
-#model = YOLO(r"C:\Users\HP\runs\detect\train13\weights\best.pt")
 model = YOLO("best.pt")
-
 # Initialize EasyOCR Reader
 #reader = easyocr.Reader(['en'], gpu=True, model_storage_directory=r"C:\Users\HP\Downloads\project_dataset")
 reader = easyocr.Reader(['en'], gpu=False, model_storage_directory=".")
