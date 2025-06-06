@@ -9,6 +9,9 @@ try:
 except ModuleNotFoundError:
     subprocess.check_call([sys.executable, "-m", "pip", "install", "opencv-python-headless"])
     import cv2
+from ultralytics import YOLO
+model = YOLO("best.pt")
+model.export(format="torchscript")
 
 # Fix for PyTorch >= 2.6 model unpickling
 import torch
@@ -31,7 +34,7 @@ from PIL import Image
 import imutils
 
 # Load YOLOv8 Model
-model = YOLO("best.pt")
+model = YOLO("best.torchscript.pt")
 
 # Initialize EasyOCR Reader
 reader = easyocr.Reader(['en'], gpu=False, model_storage_directory=".")
