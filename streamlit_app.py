@@ -1,24 +1,30 @@
 
 import subprocess
 import sys
+import os
 
+# Ensure OpenCV is available
 try:
     import cv2
 except ModuleNotFoundError:
     subprocess.check_call([sys.executable, "-m", "pip", "install", "opencv-python-headless"])
     import cv2
 
+# Fix for PyTorch >= 2.6 model unpickling
 import torch
 from torch.serialization import add_safe_globals
 from ultralytics.nn.tasks import DetectionModel
-add_safe_globals([DetectionModel])  # ✅ Required for loading best.pt
+from torch.nn.modules.container import Sequential
+add_safe_globals([DetectionModel, Sequential])
 
+# All necessary imports
 import streamlit as st
 import numpy as np
 import easyocr
 from ultralytics import YOLO
 from PIL import Image
 import imutils
+
 
 # Load YOLOv8 Model
 model = YOLO("best.pt")
