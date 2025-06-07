@@ -10,16 +10,15 @@ except ModuleNotFoundError:
     subprocess.check_call([sys.executable, "-m", "pip", "install", "opencv-python-headless"])
     import cv2
 
-# 🛡️ Register required PyTorch globals for unpickling (for PyTorch ≥ 2.6)
 import torch
 from torch.serialization import add_safe_globals
 from ultralytics.nn.tasks import DetectionModel
-import ultralytics.nn.modules.conv
-
+from ultralytics.nn.modules.conv import Conv
+from ultralytics.nn.modules.block import C2f  # ✅ NEW
 from torch.nn.modules.container import Sequential
 from torch.nn.modules.conv import Conv2d
 from torch.nn.modules.batchnorm import BatchNorm2d
-from torch.nn.modules.activation import SiLU  # ✅ Critical for Ultralytics models
+from torch.nn.modules.activation import SiLU
 
 add_safe_globals([
     DetectionModel,
@@ -27,8 +26,10 @@ add_safe_globals([
     Conv2d,
     BatchNorm2d,
     SiLU,
-    ultralytics.nn.modules.conv.Conv
+    Conv,
+    C2f  
 ])
+
 
 # ✅ Load re-saved safe model
 from ultralytics import YOLO
