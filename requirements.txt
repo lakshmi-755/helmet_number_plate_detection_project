@@ -3,7 +3,7 @@ torch==2.1.1
 torchvision==0.16.1
 opencv-python-headless==4.11.0.86
 ultralytics==8.0.14
-numpy
+numpy==1.26.4
 pillow
 easyocr
 imutils
