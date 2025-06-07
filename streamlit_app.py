@@ -36,7 +36,7 @@ add_safe_globals([
 
 # ✅ Load re-saved safe model
 from ultralytics import YOLO
-model = YOLO("best_safe.pt")  # ✅ Ensure this file exists in your repo
+model = YOLO("best_safe_final2.pt")  # ✅ Ensure this file exists in your repo
 
 # Other imports
 import streamlit as st
