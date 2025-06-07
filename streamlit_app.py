@@ -15,12 +15,19 @@ from torch.serialization import add_safe_globals
 from ultralytics.nn.tasks import DetectionModel
 from torch.nn.modules.container import Sequential
 import ultralytics.nn.modules.conv
+from torch.serialization import add_safe_globals
+from ultralytics.nn.tasks import DetectionModel
+import ultralytics.nn.modules.conv
+from torch.nn.modules.container import Sequential
+from torch.nn.modules.conv import Conv2d  # ✅ Add this import
+
+# ✅ Now include Conv2d in safe globals
 add_safe_globals([
     DetectionModel,
     Sequential,
-    ultralytics.nn.modules.conv.Conv
+    ultralytics.nn.modules.conv.Conv,
+    Conv2d  # ✅ Add Conv2d to fix UnpicklingError
 ])
-
 # ✅ Now it's safe to import and load the model
 from ultralytics import YOLO
 model = YOLO("best.pt")  # Keep only this line for loading
