@@ -1,7 +1,6 @@
 
 import subprocess
 import sys
-import os
 
 # Ensure OpenCV is available
 try:
@@ -10,9 +9,22 @@ except ModuleNotFoundError:
     subprocess.check_call([sys.executable, "-m", "pip", "install", "opencv-python-headless"])
     import cv2
 
-# Load YOLOv8 TorchScript model
+# ⬇️ Must be placed BEFORE YOLO model is loaded
+import torch
+from torch.serialization import add_safe_globals
+from ultralytics.nn.tasks import DetectionModel
+from torch.nn.modules.container import Sequential
+import ultralytics.nn.modules.conv
+add_safe_globals([
+    DetectionModel,
+    Sequential,
+    ultralytics.nn.modules.conv.Conv
+])
+
+# ✅ Now it's safe to import and load the model
 from ultralytics import YOLO
-model = YOLO("best.pt")  
+model = YOLO("best.pt")  # Keep only this line for loading
+
 
 # Safe imports
 import streamlit as st
