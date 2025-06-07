@@ -15,7 +15,7 @@ import torch
 
 from ultralytics import YOLO
 
-model = YOLO("best_safe_final2.pt")
+model = YOLO("best.pt")
 
 
 # Other imports
