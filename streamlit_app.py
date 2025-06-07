@@ -1,48 +1,52 @@
 
 import subprocess
 import sys
+import os
 
+# Ensure OpenCV is available
 try:
     import cv2
 except ModuleNotFoundError:
-    import subprocess, sys
     subprocess.check_call([sys.executable, "-m", "pip", "install", "opencv-python-headless"])
     import cv2
 
-# ✅ Register required classes for PyTorch unpickling
+# 🛡️ Register required PyTorch globals for unpickling (for PyTorch ≥ 2.6)
 import torch
 from torch.serialization import add_safe_globals
+from ultralytics.nn.tasks import DetectionModel
+import ultralytics.nn.modules.conv
+
 from torch.nn.modules.container import Sequential
 from torch.nn.modules.conv import Conv2d
 from torch.nn.modules.batchnorm import BatchNorm2d
-from ultralytics.nn.tasks import DetectionModel
-import ultralytics.nn.modules.conv
+from torch.nn.modules.activation import SiLU  # ✅ Critical for Ultralytics models
 
 add_safe_globals([
     DetectionModel,
     Sequential,
     Conv2d,
     BatchNorm2d,
+    SiLU,
     ultralytics.nn.modules.conv.Conv
 ])
 
+# ✅ Load re-saved safe model
 from ultralytics import YOLO
-model = YOLO("best_safe.pt")
- 
+model = YOLO("best_safe.pt")  # ✅ Ensure this file exists in your repo
 
-# Safe imports
+# Other imports
 import streamlit as st
 import numpy as np
 import easyocr
 from PIL import Image
 
-# Initialize EasyOCR Reader
+# EasyOCR Reader
 reader = easyocr.Reader(['en'], gpu=False, model_storage_directory=".")
 
 st.title("🚀 Helmet Detection & Number Plate Recognition")
 st.write("Upload an image or video. The model detects helmet usage and reads number plates if helmet is missing.")
 
-# Function to normalize number plate text
+# Number plate text normalization
 def is_valid_number_plate(text):
     dict_char_to_int = {'O': '0', 'I': '1', 'J': '3', 'A': '4', 'G': '6', 'S': '5'}
     dict_int_to_char = {'0': 'O', '1': 'I', '3': 'J', '4': 'A', '6': 'G', '5': 'S'}
@@ -54,7 +58,7 @@ def is_valid_number_plate(text):
             new_text[i] = dict_char_to_int.get(new_text[i], new_text[i])
     return ''.join(new_text) if 8 <= len(text) <= 10 else None
 
-# Upload
+# File Upload
 uploaded_file = st.file_uploader("Upload an Image or Video", type=["jpg", "jpeg", "png", "mp4", "avi"])
 
 if uploaded_file is not None:
