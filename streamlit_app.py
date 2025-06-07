@@ -15,7 +15,6 @@ model = YOLO("best.pt")
 # Initialize EasyOCR Reader
 reader = easyocr.Reader(['en'], gpu=False, model_storage_directory=".")
 
-
 st.title("🚀 Helmet Detection & Number Plate Recognition")
 st.write("This the web page in which it takes image or video of motorcyclists as input")
 st.write("And detects whether they are wearing helmet or not")
@@ -122,12 +121,12 @@ if uploaded_file is not None:
             cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2) # Use line_thickness = 2
             cv2.putText(frame, f"{label}", (x1, y1 - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1) # Use font_thickness = 1
         st.write("The labeled image by the yolov8n model is..")
-        st.image(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB), caption="Processed Image", use_container_width=True) # Convert back to RGB for Streamlit
+        st.image(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB), caption="Processed Image", use_column_width=True) # Convert back to RGB for Streamlit
 
         if number_plate_region:
             x1, y1, x2, y2 = number_plate_region
             cropped = frame[y1:y2, x1:x2]  # Crop using BGR frame
-            st.image(cropped, caption=" Number Plate Region Detected is", use_container_width=True)
+            st.image(cropped, caption=" Number Plate Region Detected is", use_column_width=True)
             gray_cropped = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
 
             result = reader.readtext(gray_cropped,
@@ -195,13 +194,13 @@ if uploaded_file is not None:
                     cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
                     cv2.putText(frame, f"{label}", (x1, y1 - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
 
-                frame_placeholder.image(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB), caption=f"Processing Frame {frame_count}", use_container_width=True)
+                frame_placeholder.image(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB), caption=f"Processing Frame {frame_count}", use_column_width=True)
                 
                 if number_plate_region:
                     x1, y1, x2, y2 = number_plate_region
                     cropped = frame[y1:y2, x1:x2]
                     if cropped is not None and cropped.size != 0:
-                        st.image(cropped, caption="Number Plate Region Detected", use_container_width=True)
+                        st.image(cropped, caption="Number Plate Region Detected", use_column_width=True)
                         gray_cropped = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
 
                         result = reader.readtext(
