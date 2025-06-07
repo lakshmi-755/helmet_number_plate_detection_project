@@ -11,12 +11,10 @@ except ModuleNotFoundError:
     import cv2
 
 import torch
-
-
 from ultralytics import YOLO
 
+# Load model
 model = YOLO("best.pt")
-
 
 # Other imports
 import streamlit as st
@@ -27,10 +25,11 @@ from PIL import Image
 # EasyOCR Reader
 reader = easyocr.Reader(['en'], gpu=False, model_storage_directory=".")
 
+# Streamlit app title
 st.title("🚀 Helmet Detection & Number Plate Recognition")
 st.write("Upload an image or video. The model detects helmet usage and reads number plates if helmet is missing.")
 
-# Number plate text normalization
+# Number plate correction logic
 def is_valid_number_plate(text):
     dict_char_to_int = {'O': '0', 'I': '1', 'J': '3', 'A': '4', 'G': '6', 'S': '5'}
     dict_int_to_char = {'0': 'O', '1': 'I', '3': 'J', '4': 'A', '6': 'G', '5': 'S'}
@@ -42,7 +41,7 @@ def is_valid_number_plate(text):
             new_text[i] = dict_char_to_int.get(new_text[i], new_text[i])
     return ''.join(new_text) if 8 <= len(text) <= 10 else None
 
-# File Upload
+# File uploader
 uploaded_file = st.file_uploader("Upload an Image or Video", type=["jpg", "jpeg", "png", "mp4", "avi"])
 
 if uploaded_file is not None:
@@ -50,7 +49,7 @@ if uploaded_file is not None:
 
     if uploaded_file.type.startswith("image"):
         img = Image.open(uploaded_file).convert("RGB")
-        st.image(img, caption="Uploaded Image")
+        st.image(img, caption="Uploaded Image", use_container_width=True)
         img = np.array(img)
         frame = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
 
@@ -66,12 +65,12 @@ if uploaded_file is not None:
             cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
             cv2.putText(frame, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
 
-        st.image(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB), caption="YOLO Prediction")
+        st.image(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB), caption="YOLO Prediction", use_container_width=True)
 
         if number_plate_region:
             x1, y1, x2, y2 = number_plate_region
             cropped = frame[y1:y2, x1:x2]
-            st.image(cropped, caption="Number Plate Detected")
+            st.image(cropped, caption="Number Plate Detected", use_container_width=True)
             gray = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
 
             result = reader.readtext(gray, allowlist='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789',
@@ -116,7 +115,7 @@ if uploaded_file is not None:
                         cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
                         cv2.putText(frame, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
 
-                frame_placeholder.image(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB), use_column_width=True)
+                frame_placeholder.image(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB), use_container_width=True)
 
             cap.release()
             st.video(temp_path)
