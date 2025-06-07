@@ -12,7 +12,7 @@ except ModuleNotFoundError:
 
 # Load YOLOv8 TorchScript model
 from ultralytics import YOLO
-model = YOLO("best.torchscript.pt")  
+model = YOLO("best.pt")  
 
 # Safe imports
 import streamlit as st
