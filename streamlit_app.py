@@ -26,9 +26,13 @@ add_safe_globals([
     ultralytics.nn.modules.conv.Conv
 ])
 
-# ✅ Now safe to import and load the model
 from ultralytics import YOLO
-model = YOLO("best.pt")  
+
+# Load original model
+model = YOLO("best.pt")
+model.save("best_safe.pt") 
+model = YOLO("best_safe.pt")
+ 
 
 # Safe imports
 import streamlit as st
