@@ -27,6 +27,7 @@ add_safe_globals([
     Sequential,
     ultralytics.nn.modules.conv.Conv,
     Conv2d  # ✅ Add Conv2d to fix UnpicklingError
+    BatchNorm2d 
 ])
 # ✅ Now it's safe to import and load the model
 from ultralytics import YOLO
