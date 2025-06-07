@@ -20,6 +20,7 @@ from ultralytics.nn.tasks import DetectionModel
 import ultralytics.nn.modules.conv
 from torch.nn.modules.container import Sequential
 from torch.nn.modules.conv import Conv2d  
+from torch.nn.modules.batchnorm import BatchNorm2d
 
 # ✅ Now include Conv2d in safe globals
 add_safe_globals([
