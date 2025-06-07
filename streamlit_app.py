@@ -12,10 +12,12 @@ except ModuleNotFoundError:
 
 import torch
 from torch.serialization import add_safe_globals
+
 from ultralytics.nn.tasks import DetectionModel
 from ultralytics.nn.modules.conv import Conv
-from ultralytics.nn.modules.block import C2f  # ✅ NEW
-from torch.nn.modules.container import Sequential
+from ultralytics.nn.modules.block import C2f
+
+from torch.nn.modules.container import Sequential, ModuleList  # ✅ updated
 from torch.nn.modules.conv import Conv2d
 from torch.nn.modules.batchnorm import BatchNorm2d
 from torch.nn.modules.activation import SiLU
@@ -23,11 +25,12 @@ from torch.nn.modules.activation import SiLU
 add_safe_globals([
     DetectionModel,
     Sequential,
+    ModuleList,  # ✅ Needed now
     Conv2d,
     BatchNorm2d,
     SiLU,
     Conv,
-    C2f  
+    C2f
 ])
 
 
