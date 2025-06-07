@@ -19,14 +19,14 @@ from torch.serialization import add_safe_globals
 from ultralytics.nn.tasks import DetectionModel
 import ultralytics.nn.modules.conv
 from torch.nn.modules.container import Sequential
-from torch.nn.modules.conv import Conv2d  # ✅ Add this import
+from torch.nn.modules.conv import Conv2d  
 
 # ✅ Now include Conv2d in safe globals
 add_safe_globals([
     DetectionModel,
     Sequential,
     ultralytics.nn.modules.conv.Conv,
-    Conv2d  # ✅ Add Conv2d to fix UnpicklingError
+    Conv2d,
     BatchNorm2d 
 ])
 # ✅ Now it's safe to import and load the model
