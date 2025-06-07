@@ -27,10 +27,6 @@ add_safe_globals([
 ])
 
 from ultralytics import YOLO
-
-# Load original model
-model = YOLO("best.pt")
-model.save("best_safe.pt") 
 model = YOLO("best_safe.pt")
  
 
