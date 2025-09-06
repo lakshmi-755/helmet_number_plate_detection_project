@@ -7,7 +7,9 @@ import easyocr
 from ultralytics import YOLO
 from PIL import Image
 
+# -----------------------------
 # Load YOLOv8 Model
+# -----------------------------
 model = YOLO("best.pt")
 
 # Initialize EasyOCR Reader
@@ -16,8 +18,9 @@ reader = easyocr.Reader(['en'], gpu=False, model_storage_directory=".")
 st.title("🚀 Helmet Detection & Number Plate Recognition")
 st.write("Upload an image or video to detect helmets and recognize number plates.")
 
+# -----------------------------
 # Helper Function: Validate and correct number plate
-
+# -----------------------------
 def is_valid_number_plate(text):
     dict_char_to_int = {'O': '0', 'I': '1', 'J': '3', 'A': '4', 'G': '6', 'S': '5'}
     dict_int_to_char = {'0': 'O', '1': 'I', '3': 'J', '4': 'A', '6': 'G', '5': 'S'}
@@ -30,12 +33,17 @@ def is_valid_number_plate(text):
             new_text[i] = dict_char_to_int.get(new_text[i], new_text[i])
     return ''.join(new_text) if 7 <= len(text) <= 10 else None
 
+# -----------------------------
 # File Upload
+# -----------------------------
 uploaded_file = st.file_uploader("Upload an Image or Video", type=["jpg", "jpeg", "png", "mp4", "avi"])
 
 if uploaded_file is not None:
     file_bytes = uploaded_file.read()
 
+    # -----------------------------
+    # IMAGE PROCESSING
+    # -----------------------------
     if uploaded_file.type.startswith("image"):
         img = Image.open(uploaded_file).convert("RGB")
         st.image(img, caption="Input Image")
@@ -52,18 +60,21 @@ if uploaded_file is not None:
             if label == "number plate":
                 number_plate_region = (x1, y1, x2, y2)
 
+            # Draw bounding box
             color = (0, 255, 0) if label == "with helmet" else (0, 0, 255) if label == "without helmet" else (255, 255, 0)
             cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
             cv2.putText(frame, f"{label}", (x1, y1 - 15), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
 
         st.image(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB), caption="Detected Output", use_container_width=True)
 
+        # OCR for number plate
         if number_plate_region:
             x1, y1, x2, y2 = number_plate_region
             cropped = frame[y1:y2, x1:x2]
             st.image(cropped, caption="Detected Number Plate", use_container_width=True)
             gray = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
-            result = reader.readtext(gray, decoder='greedy', allowlist='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', detail=1)
+            result = reader.readtext(gray, decoder='greedy',
+                                     allowlist='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', detail=1)
 
             detected_text = " ".join([r[1] for r in result])
             final_text = detected_text.replace(" ", "")
@@ -74,25 +85,41 @@ if uploaded_file is not None:
             else:
                 st.write(f"**Detected Text:** {final_text} - Invalid Format")
 
+    # -----------------------------
+    # VIDEO PROCESSING
+    # -----------------------------
     elif uploaded_file.type.startswith("video"):
         st.subheader("📹 Video Processing...")
+
+        # Save uploaded video temporarily
         temp_file_path = f"temp_{uploaded_file.name}"
         with open(temp_file_path, "wb") as f:
             f.write(file_bytes)
 
+        # Show original uploaded video
         st.video(temp_file_path)
-        cap = cv2.VideoCapture(temp_file_path)
 
+        # Define output path for processed video
+        output_path = f"processed_{uploaded_file.name}"
+
+        cap = cv2.VideoCapture(temp_file_path)
         if not cap.isOpened():
             st.error("Error: Could not open video file.")
         else:
-            frame_no = 0
+            # Get video properties
+            fps = int(cap.get(cv2.CAP_PROP_FPS))
+            width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+            height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
+            # VideoWriter to save processed video
+            fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+            out = cv2.VideoWriter(output_path, fourcc, fps, (width, height))
+
             while cap.isOpened():
                 ret, frame = cap.read()
                 if not ret:
                     break
 
-                frame_no += 1
                 results = model.predict(source=frame)
                 number_plate_region = None
 
@@ -103,29 +130,22 @@ if uploaded_file is not None:
                     if label == "number plate":
                         number_plate_region = (x1, y1, x2, y2)
 
+                    # Draw bounding boxes
                     color = (0, 255, 0) if label == "with helmet" else (0, 0, 255) if label == "without helmet" else (255, 255, 0)
                     cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
-                    cv2.putText(frame, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
+                    cv2.putText(frame, f"{label}", (x1, y1 - 10),
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
 
-                st.image(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB), caption=f"Frame {frame_no}", use_container_width=True)
+                # Write processed frame to output video
+                out.write(frame)
 
-                if number_plate_region:
-                    x1, y1, x2, y2 = number_plate_region
-                    cropped = frame[y1:y2, x1:x2]
-                    if cropped.size != 0:
-                        st.image(cropped, caption=f"Number Plate Frame {frame_no}", use_container_width=True)
-                        gray = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
-                        result = reader.readtext(gray, decoder='greedy', allowlist='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', detail=1)
-
-                        detected_text = " ".join([r[1] for r in result]) if result else ""
-                        final_text = detected_text.replace(" ", "")
-                        corrected = is_valid_number_plate(final_text)
-
-                        confidence_score = result[0][2] if result and len(result[0]) > 2 else 0.0
-
-                        if corrected:
-                            st.write(f"**Frame {frame_no} Detected Text:** {corrected} (Original: {final_text}, Confidence: {confidence_score:.2f})")
-                        else:
-                            st.write(f"**Frame {frame_no} Detected Text:** {final_text} (Confidence: {confidence_score:.2f}) - Invalid Format")
             cap.release()
+            out.release()
+
+            # Show processed video
+            st.success("✅ Processed video with labels is ready!")
+            st.video(output_path)
+
+            # Clean up
             os.remove(temp_file_path)
+
