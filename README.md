@@ -7,7 +7,7 @@ If a rider is found **without a helmet**, the system identifies their **number p
 ---
 # 🚀 How it is working:  
 <video width="720" controls>
-  <source src="Project_Implementation.mp4" type="video/mp4">
+  <source src="https://github.com/lakshmi-755/helmet_number_plate_detection_project/blob/main/Project_Implementation.mp4" type="video/mp4">
 </video>
 
 ## 📌 Project Overview  
