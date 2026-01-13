@@ -5,6 +5,10 @@ This project takes **images or videos** of motorcyclists as input and detects wh
 If a rider is found **without a helmet**, the system identifies their **number plate** and extracts the text for further action.  
 
 ---
+# 🚀 How it is working:  
+<video width="720" controls>
+  <source src="Project_Implementation (1) (2)" type="video/mp4">
+</video>
 
 ## 📌 Project Overview  
 This project utilizes **Deep Learning** to detect motorcyclists and recognize whether they are wearing helmets.  
